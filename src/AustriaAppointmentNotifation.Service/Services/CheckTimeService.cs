@@ -15,18 +15,16 @@ using System.Reflection.Metadata;
 using System.Text;
 using System.Xml.Linq;
 
-using static System.Runtime.InteropServices.JavaScript.JSType;
-
 namespace AustriaAppointmentNotifation.Services.Services;
 
-public class ReservationService
+public class CheckTimeService
 {
     public IWebDriver _driver;
     public ReadOnlyCollection<IWebElement> radioTimesList = null;
     public ReadOnlyCollection<IWebElement> radioDatesList = null;
     public readonly Settings _settings;
 
-    public ReservationService(Settings settings)
+    public CheckTimeService(Settings settings)
     {
         _settings = settings;
     }
@@ -50,10 +48,11 @@ public class ReservationService
             foreach (var visa in _settings.Visa)
             {
                 visa.TabName = OpenReservationPage(visa);
-
+                
                 //AustriaAppointment:
                 if (CheckAvailibity(visa))
                 {
+                    visa.TimeExist = true;
                     LogService.LogData(null, "Time Found");
 
                     var dateNow = DateTime.Now;
@@ -76,6 +75,7 @@ public class ReservationService
                     //AustriaAppointment:
                     if (CheckAvailibity(visa))
                     {
+                        visa.TimeExist = true;
                         LogService.LogData(null, "Time Found");
 
                         var dateNow = DateTime.Now;
