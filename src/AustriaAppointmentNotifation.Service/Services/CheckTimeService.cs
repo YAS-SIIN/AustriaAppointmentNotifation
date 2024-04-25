@@ -84,7 +84,7 @@ public class CheckTimeService
                     }
                 }
 
-            } while (false);
+            } while (true);
 
               
             //_driver.Dispose();

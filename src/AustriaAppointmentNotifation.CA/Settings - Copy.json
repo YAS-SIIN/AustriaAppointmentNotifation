@@ -1,17 +1,27 @@
 {
   "PersonInformations": [
-    {
-      "TimeExist": false,
-      "VisaType": 30782,
-      "TabName": ""
-    }    ,
+    //{
+    //  "TimeExist": false,
+    //  "VisaType": 30782,
+    //  "TabName": ""
+    //},
+    //{
+    //  "TimeExist": false,
+    //  "VisaType": 23134510,
+    //  "TabName": ""
+    //},
+    //{
+    //  "TimeExist": false,
+    //  "VisaType": 13713913,
+    //  "TabName": ""
+    //},
     {
       "TimeExist": false,
       "VisaType": 23369141,
       "TabName": ""
     }
   ],
-  "BrowserType": 1,
+  "BrowserType": 0,
   "ReloadDelay": 500,
   "ReservationTypeGuid": [ "30782 (JobSeeker): Jobseeker", "23134510 (Student): NAG, residence permit, nur/only Studenten und Schüler, students and pupils", "13713913 (Attachment): NAG, residence permits, NO students and pupils, keine Schüler und Studenten", "34896877: NBoE 2024", "13713939: Schengenvisa VFS VISIT/BESUCH سفر دیدار از بستگان", "23369141 (Test): Sondertermin, Special appointment" ]
 
