@@ -6,7 +6,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AustriaAppointment.Services;
+namespace AustriaAppointmentNotifation.Services.Services;
 
 public static class EnumExtensions
 {

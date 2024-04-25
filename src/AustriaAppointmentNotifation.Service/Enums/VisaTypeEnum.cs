@@ -1,9 +1,9 @@
 ﻿
 using System.ComponentModel.DataAnnotations;
 
-namespace AustriaAppointment.Services.Enums;
+namespace AustriaAppointmentNotifation.Services.Enums;
 
-public enum ReservationTypeEnum
+public enum VisaTypeEnum
 {
     [Display(Name = "Jobseeker")]
     JobSeeker = 30782,
