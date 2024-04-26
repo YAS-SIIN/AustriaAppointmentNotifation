@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AustriaAppointmentNotifation.Services.Enums;
+namespace AustriaAppointmentNotification.Services.Enums;
 
 public enum BrowserTypeEnum
 {

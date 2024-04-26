@@ -1,6 +1,6 @@
-﻿using AustriaAppointmentNotifation.Service.Models;
-using AustriaAppointmentNotifation.Services.Models;
-using AustriaAppointmentNotifation.Services.Services;
+﻿using AustriaAppointmentNotification.Service.Models;
+using AustriaAppointmentNotification.Services.Models;
+using AustriaAppointmentNotification.Services.Services;
 
 using System.Text.Json;
 

@@ -1,7 +1,7 @@
-﻿using AustriaAppointmentNotifation.Service.Models;
-using AustriaAppointmentNotifation.Services.Enums;
-using AustriaAppointmentNotifation.Services.Models;
-using AustriaAppointmentNotifation.Services.Services;
+﻿using AustriaAppointmentNotification.Service.Models;
+using AustriaAppointmentNotification.Services.Enums;
+using AustriaAppointmentNotification.Services.Models;
+using AustriaAppointmentNotification.Services.Services;
 
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
@@ -15,13 +15,11 @@ using System.Reflection.Metadata;
 using System.Text;
 using System.Xml.Linq;
 
-namespace AustriaAppointmentNotifation.Services.Services;
+namespace AustriaAppointmentNotification.Services.Services;
 
 public class CheckTimeService
 {
     public IWebDriver _driver;
-    public ReadOnlyCollection<IWebElement> radioTimesList = null;
-    public ReadOnlyCollection<IWebElement> radioDatesList = null;
     public readonly Settings _settings;
 
     public CheckTimeService(Settings settings)
@@ -48,8 +46,8 @@ public class CheckTimeService
             foreach (var visa in _settings.Visa)
             {
                 visa.TabName = OpenReservationPage(visa);
-                
-                //AustriaAppointment:
+                visa.Message = $"Time for {visa.VisaType.GetDisplayName()} is open now";
+
                 if (CheckAvailibity(visa))
                 {
                     visa.TimeExist = true;
@@ -75,12 +73,18 @@ public class CheckTimeService
                     //AustriaAppointment:
                     if (CheckAvailibity(visa))
                     {
-                        visa.TimeExist = true;
-                        LogService.LogData(null, "Time Found");
+                        if (!visa.TimeExist)
+                        {
+                            visa.TimeExist = true;
+                            LogService.LogData(null, "Time Found");
 
-                        var dateNow = DateTime.Now;
+                            var dateNow = DateTime.Now;
 
-                        SaveScreenShot($"Visa_{visa.VisaType}_TimeFound_{dateNow.Year}_{dateNow.Month}_{dateNow.Day}_{dateNow.Hour}_{dateNow.Minute}_{dateNow.Second}");
+                            SaveScreenShot($"Visa_{visa.VisaType}_TimeFound_{dateNow.Year}_{dateNow.Month}_{dateNow.Day}_{dateNow.Hour}_{dateNow.Minute}_{dateNow.Second}");
+                        }
+                    } else 
+                    {
+                        visa.TimeExist = false;
                     }
                 }
 
@@ -114,10 +118,9 @@ public class CheckTimeService
             Thread.Sleep(500);
             _driver.Navigate().GoToUrl("https://appointment.bmeia.gv.at/");
             Thread.Sleep(500);
-
-
+             
             var cmbRepresentationCity = _driver.FindElement(By.Id("Office"));
-            new SelectElement(cmbRepresentationCity).SelectByText("TEHERAN");
+            new SelectElement(cmbRepresentationCity).SelectByText(visa.EmbassyCity);
 
             //btnNext
             ClickOnNext();
@@ -154,6 +157,7 @@ public class CheckTimeService
     {
         IWebElement p1 = null;
         IWebElement p2 = null;
+        ReadOnlyCollection<IWebElement> radioTimesList = null; 
 
         try
         {
@@ -170,6 +174,14 @@ public class CheckTimeService
         catch (Exception)
         {
             p2 = null;
+        }    
+        try
+        {
+            radioTimesList = _driver.FindElements(By.XPath("//form//table [@class='no-border']//td[@valign='top']//table[@class='no-border']//tbody//tr/td//input[@name='Start']"));
+        }
+        catch (Exception)
+        {
+            radioTimesList = null;
         }
 
 
@@ -178,6 +190,7 @@ public class CheckTimeService
         return false;
     }
 
+  
     public async Task SavePage(string name = "")
     {
         try

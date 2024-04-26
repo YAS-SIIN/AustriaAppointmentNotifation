@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AustriaAppointmentNotifation.Services.Services;
+namespace AustriaAppointmentNotification.Services.Services;
 
 public static class Configuration
 {

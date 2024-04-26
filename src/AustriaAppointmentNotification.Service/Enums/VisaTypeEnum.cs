@@ -1,7 +1,7 @@
 ﻿
 using System.ComponentModel.DataAnnotations;
 
-namespace AustriaAppointmentNotifation.Services.Enums;
+namespace AustriaAppointmentNotification.Services.Enums;
 
 public enum VisaTypeEnum
 {
@@ -13,7 +13,10 @@ public enum VisaTypeEnum
 
     [Display(Name = "NAG, residence permits, NO students and pupils, keine Schüler und Studenten")]
     Attachment = 13713913,
-     
+
+    [Display(Name = "Residence Permit 2024")]
+    ResidencePermit = 21836307,
+
     [Display(Name = "Sondertermin, Special appointment")]
     Test = 23369141
 }

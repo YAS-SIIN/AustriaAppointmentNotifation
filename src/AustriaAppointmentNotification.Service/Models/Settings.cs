@@ -1,6 +1,6 @@
-﻿using AustriaAppointmentNotifation.Services.Enums;
+﻿using AustriaAppointmentNotification.Services.Enums;
 
-using AustriaAppointmentNotifation.Service.Models;
+using AustriaAppointmentNotification.Service.Models;
 
 using OpenQA.Selenium;
 
@@ -10,7 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AustriaAppointmentNotifation.Services.Models;
+namespace AustriaAppointmentNotification.Services.Models;
 
 public class Settings
 {

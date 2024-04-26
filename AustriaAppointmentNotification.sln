@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.9.34723.18
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AustriaAppointmentNotifation.CA", "src\AustriaAppointmentNotifation.CA\AustriaAppointmentNotifation.CA.csproj", "{FF603E3A-10E7-44CC-BCE6-81DAD7F71BE0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AustriaAppointmentNotification.CA", "src\AustriaAppointmentNotification.CA\AustriaAppointmentNotification.CA.csproj", "{FF603E3A-10E7-44CC-BCE6-81DAD7F71BE0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AustriaAppointmentNotifation.Service", "src\AustriaAppointmentNotifation.Service\AustriaAppointmentNotifation.Service.csproj", "{B173C7BD-3CF4-43B9-A175-528591328A2E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AustriaAppointmentNotification.Service", "src\AustriaAppointmentNotification.Service\AustriaAppointmentNotification.Service.csproj", "{B173C7BD-3CF4-43B9-A175-528591328A2E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -8,7 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\AustriaAppointmentNotifation.Service\AustriaAppointmentNotifation.Service.csproj" />
+    <ProjectReference Include="..\AustriaAppointmentNotification.Service\AustriaAppointmentNotification.Service.csproj" />
   </ItemGroup>
 
   <ItemGroup>
