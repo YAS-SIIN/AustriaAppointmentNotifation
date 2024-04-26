@@ -21,42 +21,31 @@ try
 
     TelegramBotService telegramBotService = new TelegramBotService(_settings.TelegramBotToken);
 
-    await using Stream stream = System.IO.File.OpenRead(@"./files/PageScreen_Visa_Test_TimeFound_2024_4_26_19_0_149332.png");
+    //Test part
+    //await using Stream stream = System.IO.File.OpenRead(@"./files/PageScreen_Visa_Test_TimeFound_2024_4_26_19_0_149332.png");
 
-    string _message = "";
-    _message = $"Time for JobSeeker is open now";
-    _message += $"\n";
-    _message += $"\n";
-    _message += _settings.SignText;
-    await telegramBotService.SendMessageWithPhotoAsync(34207523, _message, stream);
+    //var yasinRow = _settings.TelegramChats.FirstOrDefault(x => x.ChatId == 34207523) ?? new TelegramChats { SignText = "", ChatId = 0 };
+    //string _message = "";
+    //_message = $"Time for is open for : ";
+    //_message += $"\n";
+    //_message += _settings.Visa.FirstOrDefault()?.VisaType.GetDisplayName() ?? "Test Visa";
+    //_message += $"\n";
+    //_message += $"\n";
+    //_message += yasinRow?.SignText;
+    //await telegramBotService.SendMessageWithPhotoAsync(yasinRow.ChatId, _message, stream);
 
     //await Task.Run(() => telegramBotService.RunBot());
 
 
-    //_checkTimeService = new CheckTimeService(_settings, telegramBotService);
+    _checkTimeService = new CheckTimeService(_settings, telegramBotService); 
+    await _checkTimeService.StartAsync();
 
-    //await _checkTimeService.StartAsync();
-
-    Console.ReadLine();
 }
 catch (Exception ex)
 {
+    Console.WriteLine("Error In Run | " + ex?.ToString());
     LogService.LogData(ex, "Error In Run");
 }
-
-
-//try
-//{
-
-//    //await telegramBotService.RunBot();
-
-
-//    Task.Run(() => telegramBotService.RunBot());
-//}
-//catch (Exception)
-//{
-
-//	throw;
-//}
+ 
 
 Console.ReadLine();

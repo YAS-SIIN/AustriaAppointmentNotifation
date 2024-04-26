@@ -31,6 +31,13 @@ public class CheckTimeService
         _settings = settings;
         _telegramBotService = telegramBotService;
 
+        if (_driver is not null)
+            _driver.Dispose();
+
+        if (_settings.BrowserType is BrowserTypeEnum.Edge)
+            _driver = new OpenQA.Selenium.Edge.EdgeDriver();
+        else if (_settings.BrowserType is BrowserTypeEnum.Chrome)
+            _driver = new OpenQA.Selenium.Chrome.ChromeDriver();
 
     }
 
@@ -38,13 +45,7 @@ public class CheckTimeService
     {
         try
         {
-            if (_driver is not null)
-                _driver.Dispose();
-
-            if (_settings.BrowserType is BrowserTypeEnum.Edge)
-                _driver = new OpenQA.Selenium.Edge.EdgeDriver();
-            else if (_settings.BrowserType is BrowserTypeEnum.Chrome)
-                _driver = new OpenQA.Selenium.Chrome.ChromeDriver();
+        
 
             LogService.LogData(null, $"Start");
 
@@ -55,10 +56,11 @@ public class CheckTimeService
                     if (string.IsNullOrEmpty(visa.TabName))
                     {
                         visa.TabName = OpenReservationPage(visa);
-                        visa.Message = $"Time for {visa.VisaType.GetDisplayName()} is open now";
+                        visa.Message = $"Time for is open for : ";
+                        visa.Message += $"\n";
+                        visa.Message += visa.VisaType.GetDisplayName();
                         visa.Message += $"\n";
                         visa.Message += $"\n";
-                        visa.Message += _settings.SignText;
                     }
                     else
                     {
@@ -82,11 +84,13 @@ public class CheckTimeService
 
                             // Echo received message text
 
-                            foreach (var itemChatId in _settings.TelegramChatIds)
+                            foreach (var itemChat in _settings.TelegramChats)
                             {
+
+                                visa.Message += itemChat.SignText;
                                 await using Stream stream = System.IO.File.OpenRead(fileName);
 
-                                await _telegramBotService.SendMessageWithPhotoAsync(itemChatId, visa.Message, stream);
+                                await _telegramBotService.SendMessageWithPhotoAsync(itemChat.ChatId, visa.Message, stream);
                             }
                         }
                     }
