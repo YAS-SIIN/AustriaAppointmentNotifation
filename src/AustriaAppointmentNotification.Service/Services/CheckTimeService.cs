@@ -24,27 +24,29 @@ public class CheckTimeService
 {
     private IWebDriver _driver;
     private readonly Settings _settings;
-    private readonly TelegramBotService telegramBotService;
+    private readonly TelegramBotService _telegramBotService;
 
     public CheckTimeService(Settings settings, TelegramBotService telegramBotService)
     {
         _settings = settings;
+        _telegramBotService = telegramBotService;
+
+
     }
 
     public async Task StartAsync()
     {
         try
         {
-            LogService.LogData(null, $"Start");
-
             if (_driver is not null)
                 _driver.Dispose();
-
 
             if (_settings.BrowserType is BrowserTypeEnum.Edge)
                 _driver = new OpenQA.Selenium.Edge.EdgeDriver();
             else if (_settings.BrowserType is BrowserTypeEnum.Chrome)
                 _driver = new OpenQA.Selenium.Chrome.ChromeDriver();
+
+            LogService.LogData(null, $"Start");
 
             while (true)
             {
@@ -54,6 +56,9 @@ public class CheckTimeService
                     {
                         visa.TabName = OpenReservationPage(visa);
                         visa.Message = $"Time for {visa.VisaType.GetDisplayName()} is open now";
+                        visa.Message += $"\n";
+                        visa.Message += $"\n";
+                        visa.Message += _settings.SignText;
                     }
                     else
                     {
@@ -62,7 +67,7 @@ public class CheckTimeService
                         _driver.Navigate().Refresh();
                     }
 
-                     
+
                     //AustriaAppointment:
                     if (CheckAvailibity(visa))
                     {
@@ -73,13 +78,16 @@ public class CheckTimeService
 
                             var dateNow = DateTime.Now;
 
-                            SaveScreenShot($"Visa_{visa.VisaType}_TimeFound_{dateNow.Year}_{dateNow.Month}_{dateNow.Day}_{dateNow.Hour}_{dateNow.Minute}_{dateNow.Second}");
+                            string fileName = SaveScreenShot($"Visa_{visa.VisaType}_TimeFound_{dateNow.Year}_{dateNow.Month}_{dateNow.Day}_{dateNow.Hour}_{dateNow.Minute}_{dateNow.Second}");
 
-                            long chatId = -1002113694375;
-                            var messageText = visa.Message;
-                            Console.WriteLine($"Received a '{messageText}' message in chat {chatId}.");
                             // Echo received message text
-                          
+
+                            foreach (var itemChatId in _settings.TelegramChatIds)
+                            {
+                                await using Stream stream = System.IO.File.OpenRead(fileName);
+
+                                await _telegramBotService.SendMessageWithPhotoAsync(itemChatId, visa.Message, stream);
+                            }
                         }
                     }
                     else
@@ -88,9 +96,6 @@ public class CheckTimeService
                     }
                 }
             }
-
-
-
 
             //_driver.Dispose();
 
@@ -195,7 +200,7 @@ public class CheckTimeService
     public async Task SavePage(string name = "")
     {
         try
-        { 
+        {
             name += Random.Shared.Next(1000, 9999).ToString();
             await System.IO.File.WriteAllTextAsync(@$"./files/PageSource_{name}.html", _driver.PageSource);
             Thread.Sleep(500);
@@ -207,16 +212,18 @@ public class CheckTimeService
         }
     }
 
-    public void SaveScreenShot(string name = "")
+    public string SaveScreenShot(string name = "")
     {
         //Grid.Rows.Add(TxtBxName.Text, TxtBxAddress.Text);
         try
         {
             name += Random.Shared.Next(1000, 9999).ToString();
-
+            string fileName = @$"./files/PageScreen_{name}.png";
             Screenshot screenshot = (_driver as ITakesScreenshot).GetScreenshot();
-            screenshot.SaveAsFile(@$"./files/PageScreen_{name}.png");
-             
+            screenshot.SaveAsFile(fileName);
+            return fileName;
+
+
         }
         catch (Exception ex)
         {

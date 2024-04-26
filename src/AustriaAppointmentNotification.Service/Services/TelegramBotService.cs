@@ -21,6 +21,7 @@ using Telegram.Bot.Polling;
 using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types;
 using System.Threading;
+using System.IO;
 
 namespace AustriaAppointmentNotification.Services.Services;
 
@@ -95,13 +96,21 @@ public class TelegramBotService
         return Task.CompletedTask;
     }
      
-    public async Task SendMessageAsync(long chatId, string messageText)
-    { 
-        // Echo received message text
-        Message sentMessage = await _botClient.SendTextMessageAsync(
+    /// <summary>
+    /// Send message to special user
+    /// </summary>
+    /// <param name="chatId"></param>
+    /// <param name="messageText"></param>
+    /// <param name="file"></param>
+    /// <returns></returns>
+    public async Task SendMessageWithPhotoAsync(long chatId, string messageText, Stream file)
+    {
+        Message sentMessage = await _botClient.SendPhotoAsync(
             chatId: chatId,
-            text: "You said:\n" + messageText);
-
+            InputFile.FromStream(file),
+            caption: messageText
+            );
+          
         Console.WriteLine($"Sent a message in chat {chatId}.");
     }
 }

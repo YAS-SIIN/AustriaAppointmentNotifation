@@ -2,6 +2,8 @@
 using AustriaAppointmentNotification.Services.Models;
 using AustriaAppointmentNotification.Services.Services;
 
+using Microsoft.VisualBasic;
+
 using System.Text.Json;
 
 
@@ -14,16 +16,26 @@ Configuration.StartConfiguration();
 
 try
 {
-    TelegramBotService telegramBotService = new TelegramBotService(_settings.TelegramBotToken);
-
     string visaJson = File.ReadAllText(@"./Settings.json");
     _settings = JsonSerializer.Deserialize<Settings>(visaJson);
 
-    await Task.Run(() => telegramBotService.RunBot());
+    TelegramBotService telegramBotService = new TelegramBotService(_settings.TelegramBotToken);
 
-    _checkTimeService = new CheckTimeService(_settings);
+    await using Stream stream = System.IO.File.OpenRead(@"./files/PageScreen_Visa_Test_TimeFound_2024_4_26_19_0_149332.png");
 
-    await _checkTimeService.StartAsync();
+    string _message = "";
+    _message = $"Time for JobSeeker is open now";
+    _message += $"\n";
+    _message += $"\n";
+    _message += _settings.SignText;
+    await telegramBotService.SendMessageWithPhotoAsync(34207523, _message, stream);
+
+    //await Task.Run(() => telegramBotService.RunBot());
+
+
+    //_checkTimeService = new CheckTimeService(_settings, telegramBotService);
+
+    //await _checkTimeService.StartAsync();
 
     Console.ReadLine();
 }
