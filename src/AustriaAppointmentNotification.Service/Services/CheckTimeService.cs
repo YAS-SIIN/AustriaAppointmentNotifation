@@ -85,12 +85,10 @@ public class CheckTimeService
                             // Echo received message text
 
                             foreach (var itemChat in _settings.TelegramChats)
-                            {
-
-                                visa.Message += itemChat.SignText;
+                            { 
                                 await using Stream stream = System.IO.File.OpenRead(fileName);
 
-                                await _telegramBotService.SendMessageWithPhotoAsync(itemChat.ChatId, visa.Message, stream);
+                                await _telegramBotService.SendMessageWithPhotoAsync(itemChat.ChatId, visa.Message += itemChat.SignText, stream);
                             }
                         }
                     }

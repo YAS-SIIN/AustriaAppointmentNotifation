@@ -25,7 +25,7 @@
     }
   ],
   "BrowserType": 1,
-  "ReloadDelay": 1000,
+  "ReloadDelay": 5000,
   "TelegramBotToken": "6627387376:AAEAONI-pkWbjbb2KWQhX5ml6LxS9zMrog0",
   "ReservationTypeGuid": [
     "30782 (JobSeeker): Jobseeker",
