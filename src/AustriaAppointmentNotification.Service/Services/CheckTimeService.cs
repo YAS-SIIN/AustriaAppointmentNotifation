@@ -13,16 +13,20 @@ using System.Drawing;
 using System.Net;
 using System.Reflection.Metadata;
 using System.Text;
+using System.Threading;
 using System.Xml.Linq;
+
+using Telegram.Bot.Types;
 
 namespace AustriaAppointmentNotification.Services.Services;
 
 public class CheckTimeService
 {
-    public IWebDriver _driver;
-    public readonly Settings _settings;
+    private IWebDriver _driver;
+    private readonly Settings _settings;
+    private readonly TelegramBotService telegramBotService;
 
-    public CheckTimeService(Settings settings)
+    public CheckTimeService(Settings settings, TelegramBotService telegramBotService)
     {
         _settings = settings;
     }
@@ -42,34 +46,23 @@ public class CheckTimeService
             else if (_settings.BrowserType is BrowserTypeEnum.Chrome)
                 _driver = new OpenQA.Selenium.Chrome.ChromeDriver();
 
-
-            foreach (var visa in _settings.Visa)
-            {
-                visa.TabName = OpenReservationPage(visa);
-                visa.Message = $"Time for {visa.VisaType.GetDisplayName()} is open now";
-
-                if (CheckAvailibity(visa))
-                {
-                    visa.TimeExist = true;
-                    LogService.LogData(null, "Time Found");
-
-                    var dateNow = DateTime.Now;
-
-                    SaveScreenShot($"Visa_{visa.VisaType}_TimeFound_{dateNow.Year}_{dateNow.Month}_{dateNow.Day}_{dateNow.Hour}_{dateNow.Minute}_{dateNow.Second}");
-                }
-            }
-
-
-            do
+            while (true)
             {
                 foreach (var visa in _settings.Visa)
                 {
+                    if (string.IsNullOrEmpty(visa.TabName))
+                    {
+                        visa.TabName = OpenReservationPage(visa);
+                        visa.Message = $"Time for {visa.VisaType.GetDisplayName()} is open now";
+                    }
+                    else
+                    {
+                        _driver.SwitchTo().Window(visa.TabName);
+                        Thread.Sleep(_settings.ReloadDelay);
+                        _driver.Navigate().Refresh();
+                    }
 
-                    _driver.SwitchTo().Window(visa.TabName);
-                    Thread.Sleep(_settings.ReloadDelay);
-                    _driver.Navigate().Refresh();
-
-
+                     
                     //AustriaAppointment:
                     if (CheckAvailibity(visa))
                     {
@@ -81,16 +74,24 @@ public class CheckTimeService
                             var dateNow = DateTime.Now;
 
                             SaveScreenShot($"Visa_{visa.VisaType}_TimeFound_{dateNow.Year}_{dateNow.Month}_{dateNow.Day}_{dateNow.Hour}_{dateNow.Minute}_{dateNow.Second}");
+
+                            long chatId = -1002113694375;
+                            var messageText = visa.Message;
+                            Console.WriteLine($"Received a '{messageText}' message in chat {chatId}.");
+                            // Echo received message text
+                          
                         }
-                    } else 
+                    }
+                    else
                     {
                         visa.TimeExist = false;
                     }
                 }
+            }
 
-            } while (true);
 
-              
+
+
             //_driver.Dispose();
 
         }
@@ -108,7 +109,7 @@ public class CheckTimeService
             throw;
         }
     }
-     
+
     public string OpenReservationPage(Visa visa)
     {
         try
@@ -118,7 +119,7 @@ public class CheckTimeService
             Thread.Sleep(500);
             _driver.Navigate().GoToUrl("https://appointment.bmeia.gv.at/");
             Thread.Sleep(500);
-             
+
             var cmbRepresentationCity = _driver.FindElement(By.Id("Office"));
             new SelectElement(cmbRepresentationCity).SelectByText(visa.EmbassyCity);
 
@@ -157,7 +158,7 @@ public class CheckTimeService
     {
         IWebElement p1 = null;
         IWebElement p2 = null;
-        ReadOnlyCollection<IWebElement> radioTimesList = null; 
+        ReadOnlyCollection<IWebElement> radioTimesList = null;
 
         try
         {
@@ -174,7 +175,7 @@ public class CheckTimeService
         catch (Exception)
         {
             p2 = null;
-        }    
+        }
         try
         {
             radioTimesList = _driver.FindElements(By.XPath("//form//table [@class='no-border']//td[@valign='top']//table[@class='no-border']//tbody//tr/td//input[@name='Start']"));
@@ -190,13 +191,13 @@ public class CheckTimeService
         return false;
     }
 
-  
+
     public async Task SavePage(string name = "")
     {
         try
-        {
+        { 
             name += Random.Shared.Next(1000, 9999).ToString();
-            await File.WriteAllTextAsync(@$"./files/PageSource_{name}.html", _driver.PageSource);
+            await System.IO.File.WriteAllTextAsync(@$"./files/PageSource_{name}.html", _driver.PageSource);
             Thread.Sleep(500);
         }
         catch (Exception ex)
@@ -215,8 +216,7 @@ public class CheckTimeService
 
             Screenshot screenshot = (_driver as ITakesScreenshot).GetScreenshot();
             screenshot.SaveAsFile(@$"./files/PageScreen_{name}.png");
-
-
+             
         }
         catch (Exception ex)
         {

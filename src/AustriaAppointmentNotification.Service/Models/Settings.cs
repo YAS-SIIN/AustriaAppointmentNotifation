@@ -17,4 +17,6 @@ public class Settings
     public List<Visa> Visa { get; set; } = new();
     public BrowserTypeEnum BrowserType { get; set; } = BrowserTypeEnum.Edge;
     public int ReloadDelay { get; set; } = 0;
+    public string TelegramBotToken { get; set; }
+    public List<int> TelegramChatIds { get; set; }
 }
