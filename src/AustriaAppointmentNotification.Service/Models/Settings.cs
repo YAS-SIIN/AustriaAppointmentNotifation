@@ -9,5 +9,4 @@ public class Settings
     public BrowserTypeEnum BrowserType { get; set; } = BrowserTypeEnum.Edge;
     public int ReloadDelay { get; set; } = 0;
     public string TelegramBotToken { get; set; }
-    public List<TelegramChats> TelegramChats { get; set; }
 }

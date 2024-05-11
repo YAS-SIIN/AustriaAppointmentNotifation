@@ -1,4 +1,5 @@
 ﻿using AustriaAppointmentNotification.Services.Enums;
+using AustriaAppointmentNotification.Services.Models;
 
 namespace AustriaAppointmentNotification.Service.Models;
 
@@ -9,4 +10,5 @@ public class Visa
     public string EmbassyCity { get; set; }
     public string? TabName { get; set; }
     public string? Message { get; set; }
+    public List<TelegramChats> TelegramChats { get; set; }
 }

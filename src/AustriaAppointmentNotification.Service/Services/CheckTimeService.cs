@@ -56,7 +56,7 @@ public class CheckTimeService
                     if (string.IsNullOrEmpty(visa.TabName))
                     {
                         visa.TabName = OpenReservationPage(visa);
-                        visa.Message = $"Time for is open for : ";
+                        visa.Message = $"This time is open in {visa.EmbassyCity} for : ";
                         visa.Message += $"\n";
                         visa.Message += visa.VisaType.GetDisplayName();
                         visa.Message += $"\n";
@@ -84,7 +84,7 @@ public class CheckTimeService
 
                             // Echo received message text
 
-                            foreach (var itemChat in _settings.TelegramChats)
+                            foreach (var itemChat in visa.TelegramChats)
                             { 
                                 await using Stream stream = System.IO.File.OpenRead(fileName);
 

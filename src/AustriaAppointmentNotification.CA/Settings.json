@@ -5,23 +5,33 @@
       "VisaType": 30782,
       "TabName": "",
       "EmbassyCity": "TEHERAN",
-      "Message": ""
+      "Message": "",
+      "TelegramChats": [
+        {
+          "SignText": "@AustriaEmbassyTime",
+          "ChatId": -1002113694375
+        },
+        {
+          "SignText": "For Yasin",
+          "ChatId": 34207523
+        }
+      ]
     },
     {
       "TimeExist": false,
       "VisaType": 23369141,
       "TabName": "",
-      "EmbassyCity": "TEHERAN"
-    }
-  ],
-  "TelegramChats": [
-    {
-      "SignText": "@AustriaEmbassyTime",
-      "ChatId": -1002113694375     
-    },
-    {
-      "SignText": "For Yasin",
-      "ChatId": 34207523
+      "EmbassyCity": "TEHERAN",
+      "TelegramChats": [
+        {
+          "SignText": "@AustriaEmbassyTime",
+          "ChatId": -1002113694375
+        },
+        {
+          "SignText": "For Yasin",
+          "ChatId": 34207523
+        }
+      ]
     }
   ],
   "BrowserType": 1,

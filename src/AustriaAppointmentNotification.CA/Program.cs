@@ -26,7 +26,7 @@ try
 
     //var yasinRow = _settings.TelegramChats.FirstOrDefault(x => x.ChatId == 34207523) ?? new TelegramChats { SignText = "", ChatId = 0 };
     //string _message = "";
-    //_message = $"Time for is open for : ";
+    //_message = $"Time is open for : ";
     //_message += $"\n";
     //_message += _settings.Visa.FirstOrDefault()?.VisaType.GetDisplayName() ?? "Test Visa";
     //_message += $"\n";
