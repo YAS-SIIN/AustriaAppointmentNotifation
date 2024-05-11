@@ -24,15 +24,16 @@ try
     //Test part
     //await using Stream stream = System.IO.File.OpenRead(@"./files/PageScreen_Visa_Test_TimeFound_2024_4_26_19_0_149332.png");
 
-    //var yasinRow = _settings.TelegramChats.FirstOrDefault(x => x.ChatId == 34207523) ?? new TelegramChats { SignText = "", ChatId = 0 };
+    //var testRow = _settings.Visa.FirstOrDefault();
+    //var yasinTelegram = testRow?.TelegramChats.FirstOrDefault(x=>x.ChatId == 34207523) ?? new TelegramChats { ChatId= 34207523, SignText = "for yasin" };
     //string _message = "";
-    //_message = $"Time is open for : ";
+    //_message = $"This time is open in {testRow?.EmbassyCity} for : ";
     //_message += $"\n";
     //_message += _settings.Visa.FirstOrDefault()?.VisaType.GetDisplayName() ?? "Test Visa";
     //_message += $"\n";
     //_message += $"\n";
-    //_message += yasinRow?.SignText;
-    //await telegramBotService.SendMessageWithPhotoAsync(yasinRow.ChatId, _message, stream);
+    //_message += yasinTelegram?.SignText;
+    //await telegramBotService.SendMessageWithPhotoAsync(yasinTelegram?.ChatId ?? 34207523, _message, stream);
 
     //await Task.Run(() => telegramBotService.RunBot());
 
