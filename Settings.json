@@ -9,12 +9,11 @@
       "TelegramChats": [
         {
           "SignText": "@AustriaEmbassyTimeNotification",
-          "ChatId": -1002050088355,
-          "MessageThreadId": 9
+          "ChatId": -1002050088355_9     
         },
         {
-          "SignText": "@AustriaEmbassyTime",
-          "ChatId": -1002113694375
+          "SignText": "@AaustriaAppointment",
+          "ChatId": -1002076025406     
         },
         {
           "SignText": "For Yasin",
@@ -24,18 +23,37 @@
     },
     {
       "TimeExist": false,
-      "VisaType": 23369141,
+      "VisaType": 23134510,
       "TabName": "",
       "EmbassyCity": "TEHERAN",
       "TelegramChats": [
         {
           "SignText": "@AustriaEmbassyTimeNotification",
-          "ChatId": -1002050088355,
-          "MessageThreadId": 1
+          "ChatId": -1002050088355_8     
         },
         {
-          "SignText": "@AustriaEmbassyTime",
-          "ChatId": -1002113694375
+          "SignText": "@AaustriaAppointment",
+          "ChatId": -1002076025406     
+        },
+        {
+          "SignText": "For Yasin",
+          "ChatId": 34207523
+        }
+      ]
+    },
+    {
+      "TimeExist": false,
+      "VisaType": 13713913,
+      "TabName": "",
+      "EmbassyCity": "TEHERAN",
+      "TelegramChats": [
+        {
+          "SignText": "@AustriaEmbassyTimeNotification",
+          "ChatId": -1002050088355_7     
+        },
+        {
+          "SignText": "@AaustriaAppointment",
+          "ChatId": -1002076025406     
         },
         {
           "SignText": "For Yasin",

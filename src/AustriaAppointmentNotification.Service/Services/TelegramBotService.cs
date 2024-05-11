@@ -95,23 +95,25 @@ public class TelegramBotService
         Console.WriteLine(ErrorMessage);
         return Task.CompletedTask;
     }
-     
+
     /// <summary>
     /// Send message to special user
     /// </summary>
     /// <param name="chatId"></param>
     /// <param name="messageText"></param>
     /// <param name="file"></param>
+    /// <param name="messageThreadId"></param>
     /// <returns></returns>
-    public async Task SendMessageWithPhotoAsync(long chatId, string messageText, Stream file)
+    public async Task SendMessageWithPhotoAsync(long chatId, string messageText, Stream file, int? messageThreadId = null)
     {
         Message sentMessage = await _botClient.SendPhotoAsync(
             chatId: chatId,
             InputFile.FromStream(file),
-            caption: messageText
+            caption: messageText,
+            messageThreadId: messageThreadId
             );
           
-        Console.WriteLine($"Sent a message in chat {chatId}.");
+        Console.WriteLine($"Sent a message in chat {chatId} / {messageThreadId}.");
     }
 }
 

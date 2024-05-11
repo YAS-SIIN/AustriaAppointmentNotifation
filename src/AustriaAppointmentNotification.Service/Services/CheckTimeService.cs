@@ -57,8 +57,8 @@ public class CheckTimeService
                     {
                         visa.TabName = OpenReservationPage(visa);
                         visa.Message = $"This time is open in {visa.EmbassyCity} for : ";
-                        visa.Message += $"\n";
-                        visa.Message += visa.VisaType.GetDisplayName();
+                        visa.Message += $"\n"; 
+                        visa.Message += $"#{visa.VisaType.GetDisplayName() ?? "Test Visa"}";
                         visa.Message += $"\n";
                         visa.Message += $"\n";
                     }
@@ -88,7 +88,7 @@ public class CheckTimeService
                             { 
                                 await using Stream stream = System.IO.File.OpenRead(fileName);
 
-                                await _telegramBotService.SendMessageWithPhotoAsync(itemChat.ChatId, visa.Message += itemChat.SignText, stream);
+                                await _telegramBotService.SendMessageWithPhotoAsync(itemChat.ChatId, visa.Message += itemChat.SignText, stream, itemChat.MessageThreadId);
                             }
                         }
                     }

@@ -21,19 +21,19 @@ try
 
     TelegramBotService telegramBotService = new TelegramBotService(_settings.TelegramBotToken);
 
-    //Test part
-    //await using Stream stream = System.IO.File.OpenRead(@"./files/PageScreen_Visa_Test_TimeFound_2024_4_26_19_0_149332.png");
+    ////Test part
+    //await using Stream stream = System.IO.File.OpenRead(@"./TimeFound.png");
 
     //var testRow = _settings.Visa.FirstOrDefault();
-    //var yasinTelegram = testRow?.TelegramChats.FirstOrDefault(x=>x.ChatId == 34207523) ?? new TelegramChats { ChatId= 34207523, SignText = "for yasin" };
+    //var yasinTelegram = new TelegramChats { ChatId = -1002050088355, SignText = "for yasin", MessageThreadId = 9 } /*new TelegramChats { ChatId = 34207523, SignText = "for yasin" }*/;
     //string _message = "";
     //_message = $"This time is open in {testRow?.EmbassyCity} for : ";
     //_message += $"\n";
-    //_message += _settings.Visa.FirstOrDefault()?.VisaType.GetDisplayName() ?? "Test Visa";
+    //_message += $"#{_settings.Visa.FirstOrDefault()?.VisaType.GetDisplayName() ?? "Test Visa"}";
     //_message += $"\n";
     //_message += $"\n";
     //_message += yasinTelegram?.SignText;
-    //await telegramBotService.SendMessageWithPhotoAsync(yasinTelegram?.ChatId ?? 34207523, _message, stream);
+    //await telegramBotService.SendMessageWithPhotoAsync(yasinTelegram?.ChatId ?? 34207523, _message, stream, yasinTelegram?.MessageThreadId);
 
     //await Task.Run(() => telegramBotService.RunBot());
 
