@@ -271,7 +271,7 @@ public class CheckTimeService
         {
             if (string.IsNullOrEmpty(visa.Message))
             {
-                visa.Message = $"This time is open in {visa.EmbassyCity} for : ";
+                visa.Message = $"Appointments in {visa.EmbassyCity} available for : ";
                 visa.Message += $"\n";
                 visa.Message += $"#{visa.VisaType.GetDisplayName() ?? "Test Visa"}";
                 visa.Message += $"\n";

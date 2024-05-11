@@ -68,9 +68,8 @@
       "TelegramChats": [
         {
           "SignText": "@AustriaEmbassyTime - @AustriaEmbassyTimeNotification",
-          "ChatId": -1002050088355,
-          "MessageThreadId": 1
-        },
+          "ChatId": -1002050088355
+        }
       ]
     }
   ],
