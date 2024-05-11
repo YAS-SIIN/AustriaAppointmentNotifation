@@ -3,6 +3,8 @@ using AustriaAppointmentNotification.Services.Enums;
 using AustriaAppointmentNotification.Services.Models;
 using AustriaAppointmentNotification.Services.Services;
 
+using HtmlAgilityPack;
+
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Support.UI;
@@ -31,13 +33,6 @@ public class CheckTimeService
         _settings = settings;
         _telegramBotService = telegramBotService;
 
-        if (_driver is not null)
-            _driver.Dispose();
-
-        if (_settings.BrowserType is BrowserTypeEnum.Edge)
-            _driver = new OpenQA.Selenium.Edge.EdgeDriver();
-        else if (_settings.BrowserType is BrowserTypeEnum.Chrome)
-            _driver = new OpenQA.Selenium.Chrome.ChromeDriver();
 
     }
 
@@ -45,56 +40,35 @@ public class CheckTimeService
     {
         try
         {
-        
-
             LogService.LogData(null, $"Start");
 
-            while (true)
+            if (_settings.LoadType == LoadTypeEnum.ApiRequest)
             {
-                foreach (var visa in _settings.Visa)
+
+                while (true)
                 {
-                    if (string.IsNullOrEmpty(visa.TabName))
+                    foreach (var visa in _settings.Visa)
                     {
-                        visa.TabName = OpenReservationPage(visa);
-                        visa.Message = $"This time is open in {visa.EmbassyCity} for : ";
-                        visa.Message += $"\n"; 
-                        visa.Message += $"#{visa.VisaType.GetDisplayName() ?? "Test Visa"}";
-                        visa.Message += $"\n";
-                        visa.Message += $"\n";
+                        await CheckWithApiAsync(visa);
                     }
-                    else
+                }
+            }
+            else if (_settings.LoadType == LoadTypeEnum.Browser)
+            {
+
+                if (_driver is not null)
+                    _driver.Dispose();
+
+                if (_settings.BrowserType is BrowserTypeEnum.Edge)
+                    _driver = new OpenQA.Selenium.Edge.EdgeDriver();
+                else if (_settings.BrowserType is BrowserTypeEnum.Chrome)
+                    _driver = new OpenQA.Selenium.Chrome.ChromeDriver();
+
+                while (true)
+                {
+                    foreach (var visa in _settings.Visa)
                     {
-                        _driver.SwitchTo().Window(visa.TabName);
-                        Thread.Sleep(_settings.ReloadDelay);
-                        _driver.Navigate().Refresh();
-                    }
-
-
-                    //AustriaAppointment:
-                    if (CheckAvailibity(visa))
-                    {
-                        if (!visa.TimeExist)
-                        {
-                            visa.TimeExist = true;
-                            LogService.LogData(null, "Time Found");
-
-                            var dateNow = DateTime.Now;
-
-                            string fileName = SaveScreenShot($"Visa_{visa.VisaType}_TimeFound_{dateNow.Year}_{dateNow.Month}_{dateNow.Day}_{dateNow.Hour}_{dateNow.Minute}_{dateNow.Second}");
-
-                            // Echo received message text
-
-                            foreach (var itemChat in visa.TelegramChats)
-                            { 
-                                await using Stream stream = System.IO.File.OpenRead(fileName);
-
-                                await _telegramBotService.SendMessageWithPhotoAsync(itemChat.ChatId, visa.Message += itemChat.SignText, stream, itemChat.MessageThreadId);
-                            }
-                        }
-                    }
-                    else
-                    {
-                        visa.TimeExist = false;
+                        await CheckWithBrowserAsync(visa);
                     }
                 }
             }
@@ -149,7 +123,6 @@ public class CheckTimeService
             throw;
         }
     }
-
 
     public void ClickOnNext()
     {
@@ -232,6 +205,85 @@ public class CheckTimeService
             LogService.LogData(ex, $"Error in {nameof(SaveScreenShot)}");
             throw;
         }
+
+    }
+
+    public async Task CheckWithBrowserAsync(Visa visa)
+    {
+        if (string.IsNullOrEmpty(visa.TabName))
+        {
+            visa.TabName = OpenReservationPage(visa);
+            visa.Message = $"This time is open in {visa.EmbassyCity} for : ";
+            visa.Message += $"\n";
+            visa.Message += $"#{visa.VisaType.GetDisplayName() ?? "Test Visa"}";
+            visa.Message += $"\n";
+            visa.Message += $"\n";
+        }
+        else
+        {
+            _driver.SwitchTo().Window(visa.TabName);
+            Thread.Sleep(_settings.ReloadDelay);
+            _driver.Navigate().Refresh();
+        }
+
+
+        //AustriaAppointment:
+        if (CheckAvailibity(visa))
+        {
+            if (!visa.TimeExist)
+            {
+                visa.TimeExist = true;
+                LogService.LogData(null, "Time Found");
+
+                var dateNow = DateTime.Now;
+
+                string fileName = SaveScreenShot($"Visa_{visa.VisaType}_TimeFound_{dateNow.Year}_{dateNow.Month}_{dateNow.Day}_{dateNow.Hour}_{dateNow.Minute}_{dateNow.Second}");
+
+                // Echo received message text
+
+                foreach (var itemChat in visa.TelegramChats)
+                {
+                    await using Stream stream = System.IO.File.OpenRead(fileName);
+
+                    await _telegramBotService.SendMessageWithPhotoAsync(itemChat.ChatId, visa.Message += itemChat.SignText, stream, itemChat.MessageThreadId);
+                }
+            }
+        }
+        else
+        {
+            visa.TimeExist = false;
+        }
+    }
+    public async Task CheckWithApiAsync(Visa visa)
+    {
+        var client = new HttpClient();
+
+        // Create the HttpContent for the form to be posted.
+        var requestContent = new FormUrlEncodedContent(new[] {
+             new KeyValuePair<string, string>("Language", "en"),
+             new KeyValuePair<string, string>("Office", visa.EmbassyCity),
+             new KeyValuePair<string, string>("CalendarId", ((int)visa.VisaType).ToString()),
+             new KeyValuePair<string, string>("PersonCount", "1"),
+             new KeyValuePair<string, string>("Command", "Next"),
+        });
+        CancellationToken cancellationToken = new CancellationToken(); 
+        // Get the response.
+        HttpResponseMessage response = await client.PostAsync(
+            "https://appointment.bmeia.gv.at/?fromSpecificInfo=True",
+            requestContent, cancellationToken);
+
+        // Get the response content.
+        HttpContent responseContent = response.Content;
+        string HtmlContent = "";
+        // Get the stream of the content.
+        using (var reader = new StreamReader(await responseContent.ReadAsStreamAsync()))
+        {
+            // Write the output.
+            HtmlContent = await reader.ReadToEndAsync();
+        }
+        HtmlDocument doc = new HtmlDocument();
+        doc.LoadHtml(HtmlContent);
+
 
     }
 }

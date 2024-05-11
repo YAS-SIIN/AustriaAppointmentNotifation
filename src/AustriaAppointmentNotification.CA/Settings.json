@@ -44,7 +44,8 @@
       ]
     }
   ],
-  "BrowserType": 1,
+  "LoadType": 1,
+  "BrowserType": 0,
   "ReloadDelay": 5000,
   "TelegramBotToken": "6627387376:AAEAONI-pkWbjbb2KWQhX5ml6LxS9zMrog0",
   "ReservationTypeGuid": [
@@ -56,6 +57,14 @@
     "21836307 (Test): Residence Permit 2024",
     "23369141 (Test): Sondertermin, Special appointment"
 
+  ],
+  "BrowserTypeGuid": [
+    "0: Edge",
+    "1: Chrome"
+  ],
+  "LoadTypeGuid": [
+    "0: Browser",
+    "1: ApiRequest"
   ]
 
 }

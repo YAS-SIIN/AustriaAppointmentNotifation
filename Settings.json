@@ -9,7 +9,8 @@
       "TelegramChats": [
         {
           "SignText": "@AustriaEmbassyTimeNotification",
-          "ChatId": -1002050088355_9     
+          "ChatId": -1002050088355,
+          "MessageThreadId": 9
         },
         {
           "SignText": "@AaustriaAppointment",
@@ -29,7 +30,8 @@
       "TelegramChats": [
         {
           "SignText": "@AustriaEmbassyTimeNotification",
-          "ChatId": -1002050088355_8     
+          "ChatId": -1002050088355,
+          "MessageThreadId": 9
         },
         {
           "SignText": "@AaustriaAppointment",
@@ -49,7 +51,8 @@
       "TelegramChats": [
         {
           "SignText": "@AustriaEmbassyTimeNotification",
-          "ChatId": -1002050088355_7     
+          "ChatId": -1002050088355,
+          "MessageThreadId": 9
         },
         {
           "SignText": "@AaustriaAppointment",
