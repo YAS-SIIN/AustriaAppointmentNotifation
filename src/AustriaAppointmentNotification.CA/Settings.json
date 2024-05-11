@@ -36,7 +36,7 @@
   ],
   "BrowserType": 1,
   "ReloadDelay": 5000,
-  "TelegramBotToken": "6627387376:AAEAONI-pkWbjbb2KWQhX5ml6LxS9zMrog0",
+  "TelegramBotToken": "",
   "ReservationTypeGuid": [
     "30782 (JobSeeker): Jobseeker",
     "23134510 (Student): NAG, residence permit, nur/only Studenten und Schüler, students and pupils",
