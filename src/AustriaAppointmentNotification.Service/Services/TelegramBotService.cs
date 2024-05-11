@@ -97,7 +97,7 @@ public class TelegramBotService
     }
 
     /// <summary>
-    /// Send message to special user
+    /// Send message with photo to special user
     /// </summary>
     /// <param name="chatId"></param>
     /// <param name="messageText"></param>
@@ -115,5 +115,24 @@ public class TelegramBotService
           
         Console.WriteLine($"Sent a message in chat {chatId} / {messageThreadId}.");
     }
+
+    /// <summary>
+    /// Send message to special user
+    /// </summary>
+    /// <param name="chatId"></param>
+    /// <param name="messageText"></param>
+    /// <param name="messageThreadId"></param>
+    /// <returns></returns>
+    public async Task SendMessageAsync(long chatId, string messageText, int? messageThreadId = null)
+    {
+        Message sentMessage = await _botClient.SendTextMessageAsync(
+            chatId: chatId,
+            text: messageText,
+            messageThreadId: messageThreadId
+            );
+          
+        Console.WriteLine($"Sent a message in chat {chatId} / {messageThreadId}.");
+    }
+
 }
 

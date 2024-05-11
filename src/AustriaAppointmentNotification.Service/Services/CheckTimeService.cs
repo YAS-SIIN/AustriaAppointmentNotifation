@@ -13,6 +13,7 @@ using System;
 using System.Collections.ObjectModel;
 using System.Drawing;
 using System.Net;
+using System.Net.Http.Headers;
 using System.Reflection.Metadata;
 using System.Text;
 using System.Threading;
@@ -44,7 +45,6 @@ public class CheckTimeService
 
             if (_settings.LoadType == LoadTypeEnum.ApiRequest)
             {
-
                 while (true)
                 {
                     foreach (var visa in _settings.Visa)
@@ -210,79 +210,185 @@ public class CheckTimeService
 
     public async Task CheckWithBrowserAsync(Visa visa)
     {
-        if (string.IsNullOrEmpty(visa.TabName))
+        try
         {
-            visa.TabName = OpenReservationPage(visa);
-            visa.Message = $"This time is open in {visa.EmbassyCity} for : ";
-            visa.Message += $"\n";
-            visa.Message += $"#{visa.VisaType.GetDisplayName() ?? "Test Visa"}";
-            visa.Message += $"\n";
-            visa.Message += $"\n";
-        }
-        else
-        {
-            _driver.SwitchTo().Window(visa.TabName);
-            Thread.Sleep(_settings.ReloadDelay);
-            _driver.Navigate().Refresh();
-        }
-
-
-        //AustriaAppointment:
-        if (CheckAvailibity(visa))
-        {
-            if (!visa.TimeExist)
+            if (string.IsNullOrEmpty(visa.TabName))
             {
-                visa.TimeExist = true;
-                LogService.LogData(null, "Time Found");
+                visa.TabName = OpenReservationPage(visa);
+                visa.Message = $"This time is open in {visa.EmbassyCity} for : ";
+                visa.Message += $"\n";
+                visa.Message += $"#{visa.VisaType.GetDisplayName() ?? "Test Visa"}";
+                visa.Message += $"\n";
+                visa.Message += $"\n";
+            }
+            else
+            {
+                _driver.SwitchTo().Window(visa.TabName);
+                Thread.Sleep(_settings.ReloadDelay);
+                _driver.Navigate().Refresh();
+            }
 
-                var dateNow = DateTime.Now;
 
-                string fileName = SaveScreenShot($"Visa_{visa.VisaType}_TimeFound_{dateNow.Year}_{dateNow.Month}_{dateNow.Day}_{dateNow.Hour}_{dateNow.Minute}_{dateNow.Second}");
-
-                // Echo received message text
-
-                foreach (var itemChat in visa.TelegramChats)
+            //AustriaAppointment:
+            if (CheckAvailibity(visa))
+            {
+                if (!visa.TimeExist)
                 {
-                    await using Stream stream = System.IO.File.OpenRead(fileName);
+                    visa.TimeExist = true;
+                    LogService.LogData(null, "Time Found");
 
-                    await _telegramBotService.SendMessageWithPhotoAsync(itemChat.ChatId, visa.Message += itemChat.SignText, stream, itemChat.MessageThreadId);
+                    var dateNow = DateTime.Now;
+
+                    string fileName = SaveScreenShot($"Visa_{visa.VisaType}_TimeFound_{dateNow.Year}_{dateNow.Month}_{dateNow.Day}_{dateNow.Hour}_{dateNow.Minute}_{dateNow.Second}");
+
+                    // Echo received message text
+
+                    foreach (var itemChat in visa.TelegramChats)
+                    {
+                        await using Stream stream = System.IO.File.OpenRead(fileName);
+
+                        await _telegramBotService.SendMessageWithPhotoAsync(itemChat.ChatId, visa.Message += itemChat.SignText, stream, itemChat.MessageThreadId);
+                    }
                 }
             }
+            else
+            {
+                visa.TimeExist = false;
+            }
         }
-        else
+        catch (Exception ex)
         {
             visa.TimeExist = false;
+            LogService.LogData(ex, $"Error in {nameof(CheckWithBrowserAsync)}");
+            throw;
         }
+
+
     }
     public async Task CheckWithApiAsync(Visa visa)
     {
-        var client = new HttpClient();
+        try
+        {
+            if (string.IsNullOrEmpty(visa.Message))
+            {
+                visa.Message = $"This time is open in {visa.EmbassyCity} for : ";
+                visa.Message += $"\n";
+                visa.Message += $"#{visa.VisaType.GetDisplayName() ?? "Test Visa"}";
+                visa.Message += $"\n";
+            }
 
-        // Create the HttpContent for the form to be posted.
-        var requestContent = new FormUrlEncodedContent(new[] {
+            var body = new[] {
              new KeyValuePair<string, string>("Language", "en"),
              new KeyValuePair<string, string>("Office", visa.EmbassyCity),
              new KeyValuePair<string, string>("CalendarId", ((int)visa.VisaType).ToString()),
              new KeyValuePair<string, string>("PersonCount", "1"),
              new KeyValuePair<string, string>("Command", "Next"),
-        });
-        CancellationToken cancellationToken = new CancellationToken(); 
-        // Get the response.
-        HttpResponseMessage response = await client.PostAsync(
-            "https://appointment.bmeia.gv.at/?fromSpecificInfo=True",
-            requestContent, cancellationToken);
+        };
+            // Create the HttpContent for the form to be posted.
+            var requestContent = new FormUrlEncodedContent(body);
 
-        // Get the response content.
-        HttpContent responseContent = response.Content;
-        string HtmlContent = "";
-        // Get the stream of the content.
-        using (var reader = new StreamReader(await responseContent.ReadAsStreamAsync()))
-        {
-            // Write the output.
-            HtmlContent = await reader.ReadToEndAsync();
+            HttpContent responseContent;
+            //var baseAddress = new Uri("https://appointment.bmeia.gv.at/?fromSpecificInfo=True");
+            var cookieContainer = new CookieContainer();
+            using (var handler = new HttpClientHandler() { CookieContainer = cookieContainer })
+            using (var client = new HttpClient(handler))
+            {
+
+                //cookieContainer.Add(baseAddress, new System.Net.Cookie("CookieName", "ASP.NET_SessionId=chj4002z3gkwbcxjz245meq2"));
+                client.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.130 Safari/537.36");
+                client.DefaultRequestHeaders.Add("Cookie", "ASP.NET_SessionId=chj4002z3gkwbcxjz245meq2");
+                client.DefaultRequestHeaders.Add("Sec-Fetch-Dest", "document");
+                client.DefaultRequestHeaders.Add("Sec-Fetch-Mode", "navigate");
+                client.DefaultRequestHeaders.Add("Sec-Fetch-Site", "same-origin");
+                client.DefaultRequestHeaders.Add("Sec-Fetch-User", "?1");
+                client.DefaultRequestHeaders.Add("Accept-Language", "en-US,en;q=0.9,fa;q=0.8,de;q=0.7");
+
+                //client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8"));
+                //client.DefaultRequestHeaders.AcceptLanguage.Add(new StringWithQualityHeaderValue("en-US,en;q=0.9,fa;q=0.8,de;q=0.7"));
+                client.DefaultRequestHeaders.CacheControl = new CacheControlHeaderValue { MaxAge = TimeSpan.Zero };
+                //client.DefaultRequestHeaders.c = new CacheControlHeaderValue{ MaxAge = TimeSpan.Zero};
+
+                CancellationToken cancellationToken = new CancellationToken();
+                // Get the response.
+                HttpResponseMessage response = await client.PostAsync(
+                    "https://appointment.bmeia.gv.at/?fromSpecificInfo=True",
+                    requestContent, cancellationToken);
+
+                // Get the response content.
+                responseContent = response.Content;
+
+                response.EnsureSuccessStatusCode();
+            }
+
+
+            string HtmlContent = "";
+            // Get the stream of the content.
+            using (var reader = new StreamReader(await responseContent.ReadAsStreamAsync()))
+            {
+                // Write the output.
+                HtmlContent = await reader.ReadToEndAsync();
+            }
+            HtmlDocument doc = new HtmlDocument();
+            doc.LoadHtml(HtmlContent);
+
+            var timeIsExist = doc.DocumentNode.SelectSingleNode("//p[contains(text(), 'For your selection there are unfortunately no appointments available')]");
+            StringBuilder lstTimes = new StringBuilder();
+
+            if (timeIsExist is null)
+            {
+                if (!visa.TimeExist)
+                {
+                    visa.TimeExist = timeIsExist is null;
+                    var mainTables = doc.DocumentNode.SelectNodes("//form//table[@class='no-border'][2]");
+
+                    HtmlDocument mainDoc = new HtmlDocument();
+                    mainDoc.LoadHtml(mainTables.FirstOrDefault().InnerHtml);
+
+                    var eachTables = mainDoc.DocumentNode.SelectNodes("//table[@class='no-border']");
+
+                    lstTimes.Append("\n");
+                    foreach (var item in eachTables)
+                    {
+                        var timeNodes = item.ChildNodes;
+                        string titleDate = timeNodes.FirstOrDefault(x => x.Elements("tr").Count() > 0).ChildNodes.FirstOrDefault(x => x.Elements("th").Count() > 0).InnerText;
+                        lstTimes.Append(titleDate);
+                        lstTimes.Append("\n");
+
+                        var times = timeNodes.Where(x => x.Elements("td").Count() > 0).Select(a => a.ChildNodes).ToList().Where(y => y.Elements("label").Count() > 0).ToList().Select(a => a.FirstOrDefault().Elements("label").FirstOrDefault().InnerText).ToList();
+
+                        lstTimes.Append(string.Join("\n", times));
+                        lstTimes.Append("\n");
+                        lstTimes.Append("---------");
+                        lstTimes.Append("\n");
+
+                    }
+
+                    LogService.LogData(null, "Time Found");
+
+                    foreach (var itemChat in visa.TelegramChats)
+                    {
+                        lstTimes.Append("\n");
+                        lstTimes.Append(itemChat.SignText);
+
+                        await _telegramBotService.SendMessageAsync(itemChat.ChatId, visa.Message += lstTimes.ToString(), itemChat.MessageThreadId);
+                    }
+                }
+
+            }
+            else
+            {
+                visa.TimeExist = timeIsExist is null;
+            }
+
+
+            Thread.Sleep(_settings.ReloadDelay);
         }
-        HtmlDocument doc = new HtmlDocument();
-        doc.LoadHtml(HtmlContent);
+        catch (Exception ex)
+        {
+            visa.TimeExist = false;
+            LogService.LogData(ex, $"Error in {nameof(CheckWithApiAsync)}");
+            throw;
+        }
 
 
     }
