@@ -249,7 +249,15 @@ public class CheckTimeService
 
                         string lastMessage = visa.Message + itemChat.SignText;
 
-                        await _telegramBotService.SendMessageWithPhotoAsync(itemChat.ChatId, lastMessage, stream, itemChat.MessageThreadId);
+                        try
+                        {
+                            await _telegramBotService.SendMessageWithPhotoAsync(itemChat.ChatId, lastMessage, stream, itemChat.MessageThreadId);
+                        }
+                        catch (Exception ex)
+                        {
+                            LogService.LogData(ex, $"Error in sending message with photo to {itemChat.ChatId} / {itemChat.MessageThreadId}");
+                        }
+                      
                     }
                 }
             }
@@ -378,7 +386,7 @@ public class CheckTimeService
                         }
                         catch (Exception ex)
                         {
-                            LogService.LogData(ex, $"Error in Sending message to {itemChat.ChatId} / {itemChat.MessageThreadId}");
+                            LogService.LogData(ex, $"Error in sending message to {itemChat.ChatId} / {itemChat.MessageThreadId}");
                         }
                     }
                 }
