@@ -235,7 +235,7 @@ public class CheckTimeService
                 if (!visa.TimeExist)
                 {
                     visa.TimeExist = true;
-                    LogService.LogData(null, "Time Found");
+                    LogService.LogData(null, $"Time Found for {visa.VisaType.GetDisplayName}");
 
                     var dateNow = DateTime.Now;
 
@@ -339,6 +339,9 @@ public class CheckTimeService
                 if (!visa.TimeExist)
                 {
                     visa.TimeExist = timeIsExist is null;
+
+                    LogService.LogData(null, $"Time Found for {visa.VisaType.GetDisplayName}");
+
                     var mainTables = doc.DocumentNode.SelectNodes("//form//table[@class='no-border'][2]");
 
                     HtmlDocument mainDoc = new HtmlDocument();
@@ -362,8 +365,6 @@ public class CheckTimeService
                         lstTimes.Append("\n");
 
                     }
-
-                    LogService.LogData(null, "Time Found");
 
                     foreach (var itemChat in visa.TelegramChats)
                     {

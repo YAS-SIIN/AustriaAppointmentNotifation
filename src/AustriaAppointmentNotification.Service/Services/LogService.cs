@@ -17,10 +17,12 @@ public static class LogService
             string exeptionMessage = string.Empty;
             if (exception != null) exeptionMessage = exception.Message;
 
+            string logText = $"DateTime: {DateTime.Now}  |  ExeptionMessage : {exeptionMessage}  |  Message : {message}";
             using (StreamWriter writer = File.AppendText(Configuration.LogFilePath))
             {
                 writer.WriteLine("-------------------------------------------------------");
-                writer.WriteLine($"DateTime: {DateTime.Now}  |  ExeptionMessage : {exeptionMessage}  |  Message : {message}");
+                writer.WriteLine(logText);
+                Console.WriteLine(logText);
             }
         }
         catch { }

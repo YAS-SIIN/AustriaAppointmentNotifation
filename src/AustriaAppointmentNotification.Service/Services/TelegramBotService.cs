@@ -29,39 +29,40 @@ public class TelegramBotService
 {
     private readonly TelegramBotClient _botClient;
 
-    public TelegramBotService(string token) {
-        _botClient = new TelegramBotClient(token);       
+    public TelegramBotService(string token)
+    {
+        _botClient = new TelegramBotClient(token);
     }
 
     public async Task RunBot()
-    {     
+    {
         using (var cts = new CancellationTokenSource())
         {
-          
-                // StartReceiving does not block the caller thread. Receiving is done on the ThreadPool.
-                var receiverOptions = new ReceiverOptions
-                {
-                    AllowedUpdates = { } // receive all update types
-                };
 
-                _botClient.StartReceiving(
-                    HandleUpdateAsync,
-                    HandleErrorAsync,
-                    receiverOptions,
-                    cancellationToken: cts.Token);
+            // StartReceiving does not block the caller thread. Receiving is done on the ThreadPool.
+            var receiverOptions = new ReceiverOptions
+            {
+                AllowedUpdates = { } // receive all update types
+            };
 
-                var me = await _botClient.GetMeAsync();
+            _botClient.StartReceiving(
+                HandleUpdateAsync,
+                HandleErrorAsync,
+                receiverOptions,
+                cancellationToken: cts.Token);
 
+            var me = await _botClient.GetMeAsync();
 
-                Console.WriteLine($"Hello, World! I am user {me.Id} and my name is {me.FirstName}.");
-                Console.WriteLine($"Start listening for @{me.Username}");
-                Console.ReadLine();
-                // Send cancellation request to stop bot
-                cts.Cancel();
-        
-        } 
+             
+            LogService.LogData(null, $"Hello, World! I am user {me.Id} and my name is {me.FirstName}.");
+            LogService.LogData(null, $"Start listening for @{me.Username}");
+           
+            // Send cancellation request to stop bot
+            cts.Cancel();
+
+        }
     }
-     
+
     private async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
     {
         // Only process Message updates: https://core.telegram.org/bots/api#message
@@ -76,7 +77,7 @@ public class TelegramBotService
         messageText += "\n";
         messageText += "\n";
         messageText += "@AustriaEmbassyTime";
-        Console.WriteLine($"Received a '{messageText}' message in chat {chatId}.");
+        LogService.LogData(null, $"Received a '{messageText}' message in chat {chatId}.");
         // Echo received message text
         Message sentMessage = await botClient.SendTextMessageAsync(
             chatId: chatId,
@@ -92,7 +93,7 @@ public class TelegramBotService
                 => $"Telegram API Error:\n[{apiRequestException.ErrorCode}]\n{apiRequestException.Message}",
             _ => exception.ToString()
         };
-        Console.WriteLine(ErrorMessage);
+        LogService.LogData(null, ErrorMessage);
         return Task.CompletedTask;
     }
 
@@ -112,8 +113,8 @@ public class TelegramBotService
             caption: messageText,
             messageThreadId: messageThreadId
             );
-          
-        Console.WriteLine($"Sent a message in chat {chatId} / {messageThreadId}.");
+
+        LogService.LogData(null, $"Sent a message with photo to chat {chatId} / {messageThreadId}.");
     }
 
     /// <summary>
@@ -130,8 +131,9 @@ public class TelegramBotService
             text: messageText,
             messageThreadId: messageThreadId
             );
-          
-        Console.WriteLine($"Sent a message in chat {chatId} / {messageThreadId}.");
+
+
+        LogService.LogData(null, $"Sent a message to chat {chatId} / {messageThreadId}.");
     }
 
 }

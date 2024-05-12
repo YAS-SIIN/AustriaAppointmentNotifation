@@ -47,7 +47,6 @@ try
 }
 catch (Exception ex)
 {
-    Console.WriteLine("Error In Run | " + ex?.ToString());
     LogService.LogData(ex, "Error In Run");
 }
  
