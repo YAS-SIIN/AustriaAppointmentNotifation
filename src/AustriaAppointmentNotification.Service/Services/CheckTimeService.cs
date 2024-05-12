@@ -235,7 +235,7 @@ public class CheckTimeService
                 if (!visa.TimeExist)
                 {
                     visa.TimeExist = true;
-                    LogService.LogData(null, $"Time Found for {visa.VisaType.GetDisplayName}");
+                    LogService.LogData(null, $"Time Found for {visa.VisaType.GetDisplayName().ToString()}");
 
                     var dateNow = DateTime.Now;
 
@@ -247,7 +247,9 @@ public class CheckTimeService
                     {
                         await using Stream stream = System.IO.File.OpenRead(fileName);
 
-                        await _telegramBotService.SendMessageWithPhotoAsync(itemChat.ChatId, visa.Message += itemChat.SignText, stream, itemChat.MessageThreadId);
+                        string lastMessage = visa.Message + itemChat.SignText;
+
+                        await _telegramBotService.SendMessageWithPhotoAsync(itemChat.ChatId, lastMessage, stream, itemChat.MessageThreadId);
                     }
                 }
             }
@@ -340,7 +342,7 @@ public class CheckTimeService
                 {
                     visa.TimeExist = timeIsExist is null;
 
-                    LogService.LogData(null, $"Time Found for {visa.VisaType.GetDisplayName}");
+                    LogService.LogData(null, $"Time Found for {visa.VisaType.GetDisplayName().ToString()}");
 
                     var mainTables = doc.DocumentNode.SelectNodes("//form//table[@class='no-border'][2]");
 
@@ -365,13 +367,13 @@ public class CheckTimeService
                         lstTimes.Append("\n");
 
                     }
+                    lstTimes.Append("\n");
 
                     foreach (var itemChat in visa.TelegramChats)
                     {
-                        lstTimes.Append("\n");
-                        lstTimes.Append(itemChat.SignText);
-
-                        await _telegramBotService.SendMessageAsync(itemChat.ChatId, visa.Message += lstTimes.ToString(), itemChat.MessageThreadId);
+                        string lastMessage = visa.Message + lstTimes.ToString() + itemChat.SignText;
+                         
+                        await _telegramBotService.SendMessageAsync(itemChat.ChatId, lastMessage, itemChat.MessageThreadId);
                     }
                 }
 
