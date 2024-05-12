@@ -15,9 +15,9 @@ public static class LogService
         try
         {
             string exeptionMessage = string.Empty;
-            if (exception != null) exeptionMessage = exception.Message;
+            if (exception != null) exeptionMessage = $" ExeptionMessage : {exception.Message} |";
 
-            string logText = $"DateTime: {DateTime.Now}  |  ExeptionMessage : {exeptionMessage}  |  Message : {message}";
+            string logText = $"DateTime: {DateTime.Now} |{exeptionMessage} Message : {message}";
             using (StreamWriter writer = File.AppendText(Configuration.LogFilePath))
             {
                 writer.WriteLine("-------------------------------------------------------");

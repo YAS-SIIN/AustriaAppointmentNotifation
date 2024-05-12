@@ -8,7 +8,7 @@
       "Message": "",
       "TelegramChats": [
         {
-          "SignText": "@AustriaEmbassyTimeNotification",
+          "SignText": "@AustriaEmbassyTime - @AustriaEmbassyTimeNotification",
           "ChatId": -1002050088355,
           "MessageThreadId": 9
         },
@@ -17,8 +17,8 @@
           "ChatId": -1002076025406
         },
         {
-          "SignText": "For Yasin",
-          "ChatId": 34207523
+          "SignText": "@AustriaEmbassyTime",
+          "ChatId": -1002113694375
         }
       ]
     },
@@ -29,7 +29,7 @@
       "EmbassyCity": "TEHERAN",
       "TelegramChats": [
         {
-          "SignText": "@AustriaEmbassyTimeNotification",
+          "SignText": "@AustriaEmbassyTime - @AustriaEmbassyTimeNotification",
           "ChatId": -1002050088355,
           "MessageThreadId": 9
         },
@@ -38,8 +38,8 @@
           "ChatId": -1002076025406
         },
         {
-          "SignText": "For Yasin",
-          "ChatId": 34207523
+          "SignText": "@AustriaEmbassyTime",
+          "ChatId": -1002113694375
         }
       ]
     },
@@ -50,38 +50,29 @@
       "EmbassyCity": "TEHERAN",
       "TelegramChats": [
         {
-          "SignText": "@AustriaEmbassyTimeNotification",
+          "SignText": "@AustriaEmbassyTime - @AustriaEmbassyTimeNotification",
           "ChatId": -1002050088355,
           "MessageThreadId": 9
         },
         {
           "SignText": "@AaustriaAppointment",
           "ChatId": -1002076025406
-        },
-        {
-          "SignText": "For Yasin",
-          "ChatId": 34207523
         }
       ]
     },
     {
       "TimeExist": false,
-      "VisaType": 13713913,
+      "VisaType": 23369141,
       "TabName": "",
       "EmbassyCity": "TEHERAN",
       "TelegramChats": [
         {
-          "SignText": "@AustriaEmbassyTimeNotification",
-          "ChatId": -1002050088355,
-          "MessageThreadId": 9
+          "SignText": "@AustriaEmbassyTime - @AustriaEmbassyTimeNotification",
+          "ChatId": -1002050088355
         },
         {
           "SignText": "@AaustriaAppointment",
           "ChatId": -1002076025406
-        },
-        {
-          "SignText": "For Yasin",
-          "ChatId": 34207523
         }
       ]
     }

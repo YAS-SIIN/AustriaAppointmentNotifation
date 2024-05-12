@@ -260,7 +260,6 @@ public class CheckTimeService
         }
         catch (Exception ex)
         {
-            visa.TimeExist = false;
             LogService.LogData(ex, $"Error in {nameof(CheckWithBrowserAsync)}");
             throw;
         }
@@ -372,8 +371,15 @@ public class CheckTimeService
                     foreach (var itemChat in visa.TelegramChats)
                     {
                         string lastMessage = visa.Message + lstTimes.ToString() + itemChat.SignText;
-                         
-                        await _telegramBotService.SendMessageAsync(itemChat.ChatId, lastMessage, itemChat.MessageThreadId);
+
+                        try
+                        {
+                            await _telegramBotService.SendMessageAsync(itemChat.ChatId, lastMessage, itemChat.MessageThreadId);
+                        }
+                        catch (Exception ex)
+                        {
+                            LogService.LogData(ex, $"Error in Sending message to {itemChat.ChatId} / {itemChat.MessageThreadId}");
+                        }
                     }
                 }
 
@@ -388,7 +394,6 @@ public class CheckTimeService
         }
         catch (Exception ex)
         {
-            visa.TimeExist = false;
             LogService.LogData(ex, $"Error in {nameof(CheckWithApiAsync)}");
             throw;
         }

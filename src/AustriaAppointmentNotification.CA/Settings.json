@@ -69,6 +69,10 @@
         {
           "SignText": "@AustriaEmbassyTime - @AustriaEmbassyTimeNotification",
           "ChatId": -1002050088355
+        },
+        {
+          "SignText": "@AaustriaAppointment",
+          "ChatId": -1002076025406
         }
       ]
     }
