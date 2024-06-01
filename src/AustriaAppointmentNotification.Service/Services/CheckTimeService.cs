@@ -217,7 +217,9 @@ public class CheckTimeService
                 visa.TabName = OpenReservationPage(visa);
                 visa.Message = $"This time is open in {visa.EmbassyCity} for : ";
                 visa.Message += $"\n";
-                visa.Message += $"#{visa.VisaType.GetDisplayName() ?? "Test Visa"}";
+                visa.Message += $"#{visa.VisaType.ToString() ?? "Test Visa"}";
+                visa.Message += $"\n";
+                visa.Message += $"{visa.VisaType.GetDisplayName() ?? "Test Visa"}";
                 visa.Message += $"\n";
                 visa.Message += $"\n";
             }
@@ -283,7 +285,9 @@ public class CheckTimeService
             {
                 visa.Message = $"Appointments in {visa.EmbassyCity} available for : ";
                 visa.Message += $"\n";
-                visa.Message += $"#{nameof(visa.VisaType) ?? "Test Visa"}";
+                visa.Message += $"#{visa.VisaType.ToString() ?? "Test Visa"}";
+                visa.Message += $"\n";
+                visa.Message += $"{visa.VisaType.GetDisplayName() ?? "Test Visa"}";
                 visa.Message += $"\n";
 
                 visa.body = new[] {
