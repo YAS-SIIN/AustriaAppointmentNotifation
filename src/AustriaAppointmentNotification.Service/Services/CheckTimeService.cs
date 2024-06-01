@@ -212,7 +212,7 @@ public class CheckTimeService
     {
         try
         {
-            if (string.IsNullOrEmpty(visa.TabName))
+            if (!visa.Configured)
             {
                 visa.TabName = OpenReservationPage(visa);
                 visa.Message = $"This time is open in {visa.EmbassyCity} for : ";
@@ -226,6 +226,7 @@ public class CheckTimeService
                 _driver.SwitchTo().Window(visa.TabName);
                 Thread.Sleep(_settings.ReloadDelay);
                 _driver.Navigate().Refresh();
+                visa.Configured = true;
             }
 
 
@@ -257,7 +258,7 @@ public class CheckTimeService
                         {
                             LogService.LogData(ex, $"Error in sending message with photo to {itemChat.ChatId} / {itemChat.MessageThreadId}");
                         }
-                      
+
                     }
                 }
             }
@@ -278,57 +279,50 @@ public class CheckTimeService
     {
         try
         {
-            if (string.IsNullOrEmpty(visa.Message))
+            if (!visa.Configured)
             {
                 visa.Message = $"Appointments in {visa.EmbassyCity} available for : ";
                 visa.Message += $"\n";
-                visa.Message += $"#{visa.VisaType.GetDisplayName() ?? "Test Visa"}";
+                visa.Message += $"#{nameof(visa.VisaType) ?? "Test Visa"}";
                 visa.Message += $"\n";
+
+                visa.body = new[] {
+                    new KeyValuePair<string, string>("Language", "en"),
+                    new KeyValuePair<string, string>("Office", visa.EmbassyCity),
+                    new KeyValuePair<string, string>("CalendarId", ((int)visa.VisaType).ToString()),
+                    new KeyValuePair<string, string>("PersonCount", "1"),
+                    new KeyValuePair<string, string>("Command", "Next"),
+                };
+
+                var cookieContainer = new CookieContainer();
+                var handler = new HttpClientHandler() { CookieContainer = cookieContainer };
+                visa.client = new HttpClient(handler);
+
+                visa.client.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.130 Safari/537.36");
+                visa.client.DefaultRequestHeaders.Add("Cookie", "ASP.NET_SessionId=chj4002z3gkwbcxjz245meq2");
+                visa.client.DefaultRequestHeaders.Add("Sec-Fetch-Dest", "document");
+                visa.client.DefaultRequestHeaders.Add("Sec-Fetch-Mode", "navigate");
+                visa.client.DefaultRequestHeaders.Add("Sec-Fetch-Site", "same-origin");
+                visa.client.DefaultRequestHeaders.Add("Sec-Fetch-User", "?1");
+                visa.client.DefaultRequestHeaders.Add("Accept-Language", "en-US,en;q=0.9,fa;q=0.8,de;q=0.7");
+
+                visa.client.DefaultRequestHeaders.CacheControl = new CacheControlHeaderValue { MaxAge = TimeSpan.Zero };
+
+                visa.Configured = true;
             }
 
-            var body = new[] {
-             new KeyValuePair<string, string>("Language", "en"),
-             new KeyValuePair<string, string>("Office", visa.EmbassyCity),
-             new KeyValuePair<string, string>("CalendarId", ((int)visa.VisaType).ToString()),
-             new KeyValuePair<string, string>("PersonCount", "1"),
-             new KeyValuePair<string, string>("Command", "Next"),
-        };
-            // Create the HttpContent for the form to be posted.
-            var requestContent = new FormUrlEncodedContent(body);
+            var requestContent = new FormUrlEncodedContent(visa.body);
 
             HttpContent responseContent;
-            //var baseAddress = new Uri("https://appointment.bmeia.gv.at/?fromSpecificInfo=True");
-            var cookieContainer = new CookieContainer();
-            using (var handler = new HttpClientHandler() { CookieContainer = cookieContainer })
-            using (var client = new HttpClient(handler))
-            {
+            CancellationToken cancellationToken = new CancellationToken();
 
-                //cookieContainer.Add(baseAddress, new System.Net.Cookie("CookieName", "ASP.NET_SessionId=chj4002z3gkwbcxjz245meq2"));
-                client.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.130 Safari/537.36");
-                client.DefaultRequestHeaders.Add("Cookie", "ASP.NET_SessionId=chj4002z3gkwbcxjz245meq2");
-                client.DefaultRequestHeaders.Add("Sec-Fetch-Dest", "document");
-                client.DefaultRequestHeaders.Add("Sec-Fetch-Mode", "navigate");
-                client.DefaultRequestHeaders.Add("Sec-Fetch-Site", "same-origin");
-                client.DefaultRequestHeaders.Add("Sec-Fetch-User", "?1");
-                client.DefaultRequestHeaders.Add("Accept-Language", "en-US,en;q=0.9,fa;q=0.8,de;q=0.7");
+            HttpResponseMessage response = await visa.client.PostAsync(
+                "https://appointment.bmeia.gv.at/?fromSpecificInfo=True",
+                requestContent, cancellationToken);
 
-                //client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8"));
-                //client.DefaultRequestHeaders.AcceptLanguage.Add(new StringWithQualityHeaderValue("en-US,en;q=0.9,fa;q=0.8,de;q=0.7"));
-                client.DefaultRequestHeaders.CacheControl = new CacheControlHeaderValue { MaxAge = TimeSpan.Zero };
-                //client.DefaultRequestHeaders.c = new CacheControlHeaderValue{ MaxAge = TimeSpan.Zero};
+            responseContent = response.Content;
 
-                CancellationToken cancellationToken = new CancellationToken();
-                // Get the response.
-                HttpResponseMessage response = await client.PostAsync(
-                    "https://appointment.bmeia.gv.at/?fromSpecificInfo=True",
-                    requestContent, cancellationToken);
-
-                // Get the response content.
-                responseContent = response.Content;
-
-                response.EnsureSuccessStatusCode();
-            }
-
+            response.EnsureSuccessStatusCode();
 
             string HtmlContent = "";
             // Get the stream of the content.
@@ -347,7 +341,6 @@ public class CheckTimeService
             {
                 if (!visa.TimeExist)
                 {
-                    visa.TimeExist = timeIsExist is null;
 
                     LogService.LogData(null, $"Time Found for {visa.VisaType.GetDisplayName().ToString()}");
 
@@ -383,12 +376,14 @@ public class CheckTimeService
                         try
                         {
                             await _telegramBotService.SendMessageAsync(itemChat.ChatId, lastMessage, itemChat.MessageThreadId);
+                            visa.TimeExist = timeIsExist is null;
                         }
                         catch (Exception ex)
                         {
                             LogService.LogData(ex, $"Error in sending message to {itemChat.ChatId} / {itemChat.MessageThreadId}");
                         }
                     }
+
                 }
 
             }

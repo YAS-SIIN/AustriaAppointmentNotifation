@@ -11,4 +11,7 @@ public class Visa
     public string? TabName { get; set; }
     public string? Message { get; set; }
     public List<TelegramChats> TelegramChats { get; set; }
+    public KeyValuePair<string, string>[] body { get; set; }
+    public HttpClient client { get; set; }
+    public bool Configured { get; set; } = false;
 }

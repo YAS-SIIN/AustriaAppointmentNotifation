@@ -8,17 +8,8 @@
       "Message": "",
       "TelegramChats": [
         {
-          "SignText": "@AustriaEmbassyTime - @AustriaEmbassyTimeNotification",
-          "ChatId": -1002050088355,
-          "MessageThreadId": 9
-        },
-        {
-          "SignText": "@AaustriaAppointment",
-          "ChatId": -1002076025406
-        },
-        {
-          "SignText": "@AustriaEmbassyTime",
-          "ChatId": -1002113694375
+          "SignText": "For Yasin",
+          "ChatId": 34207523
         }
       ]
     },
@@ -29,17 +20,8 @@
       "EmbassyCity": "TEHERAN",
       "TelegramChats": [
         {
-          "SignText": "@AustriaEmbassyTime - @AustriaEmbassyTimeNotification",
-          "ChatId": -1002050088355,
-          "MessageThreadId": 9
-        },
-        {
-          "SignText": "@AaustriaAppointment",
-          "ChatId": -1002076025406
-        },
-        {
-          "SignText": "@AustriaEmbassyTime",
-          "ChatId": -1002113694375
+          "SignText": "For Yasin",
+          "ChatId": 34207523
         }
       ]
     },
@@ -50,13 +32,8 @@
       "EmbassyCity": "TEHERAN",
       "TelegramChats": [
         {
-          "SignText": "@AustriaEmbassyTime - @AustriaEmbassyTimeNotification",
-          "ChatId": -1002050088355,
-          "MessageThreadId": 9
-        },
-        {
-          "SignText": "@AaustriaAppointment",
-          "ChatId": -1002076025406
+          "SignText": "For Yasin",
+          "ChatId": 34207523
         }
       ]
     },
@@ -67,19 +44,15 @@
       "EmbassyCity": "TEHERAN",
       "TelegramChats": [
         {
-          "SignText": "@AustriaEmbassyTime - @AustriaEmbassyTimeNotification",
-          "ChatId": -1002050088355
-        },
-        {
-          "SignText": "@AaustriaAppointment",
-          "ChatId": -1002076025406
+          "SignText": "For Yasin",
+          "ChatId": 34207523
         }
       ]
     }
   ],
   "LoadType": 1,
   "BrowserType": 0,
-  "ReloadDelay": 5000,
+  "ReloadDelay": 1000,
   "TelegramBotToken": "",
   "ReservationTypeGuid": [
     "30782 (JobSeeker): Jobseeker",
