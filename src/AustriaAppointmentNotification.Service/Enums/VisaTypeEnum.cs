@@ -18,5 +18,5 @@ public enum VisaTypeEnum
     ResidencePermit = 21836307,
 
     [Display(Name = "Sondertermin, Special appointment")]
-    Test = 23369141
+    Special = 23369141
 }
