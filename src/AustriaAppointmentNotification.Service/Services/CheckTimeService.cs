@@ -346,7 +346,6 @@ public class CheckTimeService
             {
 
 
-                LogService.LogData(null, $"Time Found for {visa.VisaType.GetDisplayName().ToString()}");
 
                 var mainTables = doc.DocumentNode.SelectNodes("//form//table[@class='no-border'][2]");
 
@@ -374,6 +373,8 @@ public class CheckTimeService
                         stringBuilder.Append("---------");
                         stringBuilder.Append("\n");
                         visa.SendTime = true;
+
+                        LogService.LogData(null, $"Time Found for {visa.VisaType.GetDisplayName().ToString()}");
                     }
                 }
                 stringBuilder.Append("\n");
