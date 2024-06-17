@@ -12,6 +12,7 @@ using OpenQA.Selenium.Support.UI;
 using System;
 using System.Collections.ObjectModel;
 using System.Drawing;
+using System.Linq;
 using System.Net;
 using System.Net.Http.Headers;
 using System.Reflection.Metadata;
@@ -235,9 +236,9 @@ public class CheckTimeService
             //AustriaAppointment:
             if (CheckAvailibity(visa))
             {
-                if (!visa.TimeExist)
+                if (!visa.SendTime)
                 {
-                    visa.TimeExist = true;
+                    visa.SendTime = true;
                     LogService.LogData(null, $"Time Found for {visa.VisaType.GetDisplayName().ToString()}");
 
                     var dateNow = DateTime.Now;
@@ -266,7 +267,7 @@ public class CheckTimeService
             }
             else
             {
-                visa.TimeExist = false;
+                visa.SendTime = false;
             }
         }
         catch (Exception ex)
@@ -339,61 +340,72 @@ public class CheckTimeService
             doc.LoadHtml(HtmlContent);
 
             var timeIsExist = doc.DocumentNode.SelectSingleNode("//p[contains(text(), 'For your selection there are unfortunately no appointments available')]");
-            StringBuilder lstTimes = new StringBuilder();
+
 
             if (timeIsExist is null)
             {
-                if (!visa.TimeExist)
+
+
+                LogService.LogData(null, $"Time Found for {visa.VisaType.GetDisplayName().ToString()}");
+
+                var mainTables = doc.DocumentNode.SelectNodes("//form//table[@class='no-border'][2]");
+
+                HtmlDocument mainDoc = new HtmlDocument();
+                mainDoc.LoadHtml(mainTables.FirstOrDefault().InnerHtml);
+
+                var eachTables = mainDoc.DocumentNode.SelectNodes("//table[@class='no-border']");
+
+                StringBuilder stringBuilder = new();
+                stringBuilder.Append("\n");
+                foreach (var item in eachTables)
                 {
+                    var timeNodes = item.ChildNodes;
+                    string titleDate = timeNodes.FirstOrDefault(x => x.Elements("tr").Count() > 0).ChildNodes.FirstOrDefault(x => x.Elements("th").Count() > 0).InnerText;
 
-                    LogService.LogData(null, $"Time Found for {visa.VisaType.GetDisplayName().ToString()}");
-
-                    var mainTables = doc.DocumentNode.SelectNodes("//form//table[@class='no-border'][2]");
-
-                    HtmlDocument mainDoc = new HtmlDocument();
-                    mainDoc.LoadHtml(mainTables.FirstOrDefault().InnerHtml);
-
-                    var eachTables = mainDoc.DocumentNode.SelectNodes("//table[@class='no-border']");
-
-                    lstTimes.Append("\n");
-                    foreach (var item in eachTables)
+                    if (!visa.LastTimes.ToString().Contains(titleDate))
                     {
-                        var timeNodes = item.ChildNodes;
-                        string titleDate = timeNodes.FirstOrDefault(x => x.Elements("tr").Count() > 0).ChildNodes.FirstOrDefault(x => x.Elements("th").Count() > 0).InnerText;
-                        lstTimes.Append(titleDate);
-                        lstTimes.Append("\n");
+                        stringBuilder.Append(titleDate);
+                        stringBuilder.Append("\n");
 
                         var times = timeNodes.Where(x => x.Elements("td").Count() > 0).Select(a => a.ChildNodes).ToList().Where(y => y.Elements("label").Count() > 0).ToList().Select(a => a.FirstOrDefault().Elements("label").FirstOrDefault().InnerText).ToList();
 
-                        lstTimes.Append(string.Join("\n", times));
-                        lstTimes.Append("\n");
-                        lstTimes.Append("---------");
-                        lstTimes.Append("\n");
-
+                        stringBuilder.Append(string.Join("\n", times));
+                        stringBuilder.Append("\n");
+                        stringBuilder.Append("---------");
+                        stringBuilder.Append("\n");
+                        visa.SendTime = true;
                     }
-                    lstTimes.Append("\n");
+                }
+                stringBuilder.Append("\n");
 
+                if (visa.SendTime) visa.LastTimes = stringBuilder;
+
+
+                if (visa.SendTime)
+                {
                     foreach (var itemChat in visa.TelegramChats)
                     {
-                        string lastMessage = visa.Message + lstTimes.ToString() + itemChat.SignText;
+                        string lastMessage = visa.Message + visa.LastTimes.ToString() + itemChat.SignText;
 
                         try
                         {
                             await _telegramBotService.SendMessageAsync(itemChat.ChatId, lastMessage, itemChat.MessageThreadId);
-                            visa.TimeExist = timeIsExist is null;
+
+                            visa.SendTime = false;
                         }
                         catch (Exception ex)
                         {
                             LogService.LogData(ex, $"Error in sending message to {itemChat.ChatId} / {itemChat.MessageThreadId}");
                         }
                     }
-
                 }
+
 
             }
             else
             {
-                visa.TimeExist = timeIsExist is null;
+                visa.SendTime = timeIsExist is null;
+                visa.LastTimes.Clear();
             }
 
 

@@ -8,10 +8,10 @@ public enum VisaTypeEnum
     [Display(Name = "Jobseeker")]
     JobSeeker = 30782,
 
-    [Display(Name = "NAG, residence permit, nur/only Studenten und Schüler, students and pupils")]
+    [Display(Name = "NAG, residence permit,  sonstige/other, NO STUDENTS, NO PUPILS")]
     Student = 23134510,
 
-    [Display(Name = "NAG, residence permits, NO students and pupils, keine Schüler und Studenten")]
+    [Display(Name = "NAG, residence permit, nur/only Studenten und Schüler, students and pupils")]
     Attachment = 13713913,
 
     [Display(Name = "Residence Permit 2024")]
